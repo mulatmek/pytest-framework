@@ -1,0 +1,5 @@
+pytest
+pandas
+requests
+pre-commit
+types-requests
