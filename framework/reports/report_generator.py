@@ -1,3 +1,0 @@
-"""
-report_generator.py
-"""

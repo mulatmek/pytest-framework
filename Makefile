@@ -35,8 +35,8 @@ install: install-dev
 		echo "No `requirements.txt` found — skipping installation."; \
 	fi
 
-.PHONY : clean
-clean:
+.PHONY : clean_env
+clean_env:
 	@rm -rf $(VENV)
 	@rm -f requirements.txt
 	@rm -f requirements.lock
@@ -48,7 +48,8 @@ unitest:
 	$(PY) -m pytest -sv --endpoints=$(BASE_URL) tests/unitest
 	@echo "Unit tests completed."
 
-.PHONY : clean_logs
-clean_logs:
+.PHONY : clean
+clean:
 	@rm -f logs/*.log
-	@echo "Cleaned up log files."
+	@rm -f .report.json
+	@echo "Cleaned up log files and reports."

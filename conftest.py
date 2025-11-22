@@ -1,8 +1,13 @@
 # conftest.py
+from pathlib import Path
+
 import pytest
 
 from framework.api_handler.api import APIHandler
+from framework.cloud_resources.buckets.buckets import BucketInterface
+from framework.config import REPORTS_DIR
 from framework.logging.logger import logger
+from framework.reporter.report_generator import CSVReportGenerator
 
 
 def pytest_addoption(parser):
@@ -11,6 +16,12 @@ def pytest_addoption(parser):
         action="store",
         default="http://localhost:8000",
         help="Comma-separated list of API base URLs to test against.",
+    )
+    parser.addoption(
+        "--cloud-provider",
+        action="store",
+        default="azure",
+        help="Choose storage provider: aws, gcp, or azure",
     )
 
 
@@ -32,15 +43,40 @@ def pytest_generate_tests(metafunc):
     If so, it generates a test for every URL provided in the CLI option.
     """
     if "dynamic_url" in metafunc.fixturenames:
-        # 1. Get the string from command line
         raw_urls = metafunc.config.getoption("--endpoints")
 
-        # 2. Split string into a list and clean up whitespace
         # Example: "http://dev, http://prod" -> ['http://dev', 'http://prod']
         url_list = [url.strip() for url in raw_urls.split(",") if url.strip()]
 
-        # 3. Tell pytest to create a test case for each URL
         metafunc.parametrize("dynamic_url", url_list, scope="session")
+
+
+@pytest.hookimpl(optionalhook=True)
+def pytest_json_modifyreport(json_report):
+    """
+    Hook to access the report data before it is saved to disk.
+    """
+    logger.info("JSON Report generated. Converting to CSV...")
+
+    csv_path = Path(REPORTS_DIR) / "api_test_report.csv"
+
+    generator = CSVReportGenerator(report_data=json_report, output_csv_path=csv_path)
+
+    if generator.generate():
+        logger.info(f"CSV Report successfully created at: {csv_path}")
+    else:
+        logger.error("Failed to create CSV report.")
+
+
+def pytest_sessionfinish(session, exitstatus):
+    # 1. Get the user input from CLI
+    provider_name = session.config.getoption("--cloud-provider")
+    logger.info(f"Cloud Provider selected for tests: {provider_name}")
+    bucket = BucketInterface.get_bucket_class(
+        provider_name, connection_string=session.config.getoption("--endpoints")
+    )
+
+    logger.info(f"\nAPI session closed for {provider_name}")
 
 
 @pytest.fixture(scope="session")
@@ -51,6 +87,6 @@ def api(dynamic_url):
     if not client.ping():
         pytest.skip(f"Could not connect to API at {dynamic_url}. Skipping API tests.")
 
-    yield client  # <-- Execution pauses here until all tests using 'api' are done
+    yield client
 
     logger.info(f"\nAPI session closed for {dynamic_url}.")

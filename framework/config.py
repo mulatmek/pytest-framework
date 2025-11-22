@@ -3,3 +3,4 @@ LOG_FILE_NAME = "framework.log"
 LOG_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
 LOG_BACKUP_COUNT = 5
 DEFAULT_TIMEOUT = 30  # seconds
+REPORTS_DIR = "reports"

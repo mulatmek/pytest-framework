@@ -1,0 +1,3 @@
+Test Name,Status,Duration (s),Message
+tests/unitest/test_demo.py::test_get_api_status[http://localhost:8000],SKIPPED,0.0059,"('/Users/mulatmekonen/PycharmProjects/Framework/tests/unitest/test_demo.py', 4, 'Skipped: Could not connect to API at http://localhost:8000. Skipping API tests.')"
+tests/unitest/test_demo.py::test_api_post_status[http://localhost:8000],SKIPPED,0.0002,"('/Users/mulatmekonen/PycharmProjects/Framework/tests/unitest/test_demo.py', 8, 'Skipped: Could not connect to API at http://localhost:8000. Skipping API tests.')"
