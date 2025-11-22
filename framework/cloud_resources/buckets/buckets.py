@@ -1,4 +1,11 @@
+import os
+
+from azure.core.exceptions import ResourceNotFoundError
+from dotenv import load_dotenv
+
 from framework.logging.logger import logger
+
+load_dotenv()
 
 
 class BucketInterface:
@@ -30,20 +37,38 @@ class BucketInterface:
 class AzureBucket(BucketInterface):
     Type = "azure"
 
-    def __init__(self, connection_string: str):
+    def __init__(self):
         from azure.storage.blob import BlobServiceClient
 
+        self.connection_string = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
         self.blob_service_client = BlobServiceClient.from_connection_string(
-            connection_string
+            self.connection_string
         )
-        self.bucket_name = None  # need to set the container name
+        self.bucket_name = "framework-test"  # need to set the container name
 
     def upload_file(self, file_path: str, object_name: str):
         container_client = self.blob_service_client.get_container_client(
             self.bucket_name
         )
-        with open(file_path, "rb") as data:
-            container_client.upload_blob(name=object_name, data=data)
+
+        try:
+            with open(file_path, "rb") as data:
+                container_client.upload_blob(
+                    name=object_name, data=data, overwrite=True
+                )
+        except ResourceNotFoundError as e:
+            if "ContainerNotFound" in str(e):
+                logger.info(
+                    f"Container '{self.bucket_name}' does not exist. Creating it now..."
+                )
+                container_client.create_container()
+
+                with open(file_path, "rb") as data:
+                    container_client.upload_blob(
+                        name=object_name, data=data, overwrite=True
+                    )
+            else:
+                raise e
 
     def download_file(self, object_name: str, file_path: str):
         container_client = self.blob_service_client.get_container_client(

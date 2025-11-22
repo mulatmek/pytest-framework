@@ -1,4 +1,5 @@
 # conftest.py
+import datetime
 from pathlib import Path
 
 import pytest
@@ -8,6 +9,7 @@ from framework.cloud_resources.buckets.buckets import BucketInterface
 from framework.config import REPORTS_DIR
 from framework.logging.logger import logger
 from framework.reporter.report_generator import CSVReportGenerator
+from framework.utils.time_utils import time_stamp
 
 
 def pytest_addoption(parser):
@@ -69,12 +71,13 @@ def pytest_json_modifyreport(json_report):
 
 
 def pytest_sessionfinish(session, exitstatus):
-    # 1. Get the user input from CLI
     provider_name = session.config.getoption("--cloud-provider")
     logger.info(f"Cloud Provider selected for tests: {provider_name}")
-    bucket = BucketInterface.get_bucket_class(
-        provider_name, connection_string=session.config.getoption("--endpoints")
-    )
+    bucket = BucketInterface.get_bucket_class(provider_name)
+
+    report_name = f"test_report_{provider_name}-{time_stamp()}.csv"
+    bucket.upload_file(REPORTS_DIR + "/api_test_report.csv", report_name)
+    logger.info(f"Uploaded report file at: {report_name}")
 
     logger.info(f"\nAPI session closed for {provider_name}")
 

@@ -7,6 +7,7 @@ from pathlib import Path
 # Adjust imports to match your project structure
 from framework.config import LOG_BACKUP_COUNT, LOG_DIR, LOG_FILE_NAME, LOG_MAX_BYTES
 from framework.utils.singleton_meta import SingletonMeta
+from framework.utils.time_utils import time_stamp
 
 
 class Logger(metaclass=SingletonMeta):
@@ -20,12 +21,7 @@ class Logger(metaclass=SingletonMeta):
         # Create log directory if it doesn't exist
         Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
 
-        # Format: YYYY-MM-DD_HH-MM-SS (e.g., 2023-11-22_14-30-05)
-        # We use underscores instead of colons because colons are illegal in Windows filenames.
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-
-        # Result: logs/app_log_2023-11-22_14-30-05.log
-        current_log_name = f"{LOG_FILE_NAME}_{timestamp}.log"
+        current_log_name = f"{LOG_FILE_NAME}_{time_stamp()}.log"
         log_file_path = Path(LOG_DIR) / current_log_name
 
         # Create file handler
