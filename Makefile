@@ -50,6 +50,8 @@ unitest:
 
 .PHONY : clean
 clean:
-	@rm -f logs/*.log
+	@rm -rf logs/
 	@rm -f .report.json
+	@rm -rf reports/
+
 	@echo "Cleaned up log files and reports."
