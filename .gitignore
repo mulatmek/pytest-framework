@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.report.json
 
 # Virtual environments
 .venv/
@@ -9,7 +10,7 @@ venv/
 env/
 ENV/
 logs/
-
+reports/
 # Distribution / packaging
 build/
 dist/
