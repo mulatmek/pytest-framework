@@ -2,6 +2,7 @@
 import pytest
 
 from framework.api_handler.api import APIHandler
+from framework.logging.logger import logger
 
 
 def pytest_addoption(parser):
@@ -13,10 +14,12 @@ def pytest_addoption(parser):
     )
 
 
-#
-
-
 def pytest_collection_modifyitems(config, items):
+    """
+    This hook runs after test collection.
+    It checks each test item, and if "api" is in the test name,
+    it adds the "api" marker to that test.
+    """
     for item in items:
         if "api" in item.name.lower():
             item.add_marker(pytest.mark.api)
@@ -50,4 +53,4 @@ def api(dynamic_url):
 
     yield client  # <-- Execution pauses here until all tests using 'api' are done
 
-    print(f"\nAPI session closed for {dynamic_url}.")
+    logger.info(f"\nAPI session closed for {dynamic_url}.")

@@ -42,7 +42,13 @@ clean:
 	@rm -f requirements.lock
 	@echo "Cleaned up virtual environment and generated files."
 
-.PHONY: unit-test
-unit-test:
-	$(PY) -m pytest tests/unitest
+BASE_URL ?= https://www.google.com
+.PHONY: unitest
+unitest:
+	$(PY) -m pytest -sv --endpoints=$(BASE_URL) tests/unitest
 	@echo "Unit tests completed."
+
+.PHONY : clean_logs
+clean_logs:
+	@rm -f logs/*.log
+	@echo "Cleaned up log files."
