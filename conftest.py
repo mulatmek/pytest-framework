@@ -84,7 +84,6 @@ def pytest_sessionfinish(session, exitstatus):
 
 @pytest.fixture(scope="session")
 def api(dynamic_url):
-    # 1. Setup Phase
     client = APIHandler(base_url=dynamic_url)
 
     if not client.ping():

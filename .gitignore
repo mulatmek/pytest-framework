@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 .report.json
+.todo_list
 
 # Virtual environments
 .venv/
