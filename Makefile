@@ -8,7 +8,7 @@ PIP_COMPILE := $(VENV)/bin/pip-compile
 .PHONY: init venv install-dev compile clean
 
 init: venv install-dev compile
-	@echo "init done."
+	@echo "init done, activate the virtual environment with: source $(VENV)/bin/activate"
 
 venv:
 	@test -d $(VENV) || $(PYTHON) -m venv $(VENV)
@@ -41,3 +41,8 @@ clean:
 	@rm -f requirements.txt
 	@rm -f requirements.lock
 	@echo "Cleaned up virtual environment and generated files."
+
+.PHONY: unit-test
+unit-test:
+	$(PY) -m pytest tests/unitest
+	@echo "Unit tests completed."
