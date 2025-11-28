@@ -20,6 +20,4 @@ jobs:
     - name: Run Tests in Docker
 
       run: |
-        docker run --rm \
-          -e BASE_URL="https://www.google.com" \
-          python-app:latest
+         docker run --rm -p 8000:8000 python-app:latest --endpoints="https://www.google.com" --ci

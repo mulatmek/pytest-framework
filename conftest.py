@@ -25,6 +25,13 @@ def pytest_addoption(parser):
         default="azure",
         help="Choose storage provider: aws, gcp, or azure",
     )
+    # add biloian flag ci
+    parser.addoption(
+        "--ci",
+        action="store_true",
+        default=False,
+        help="Flag to indicate if tests are running in CI environment",
+    )
 
 
 def pytest_collection_modifyitems(config, items):
@@ -71,6 +78,10 @@ def pytest_json_modifyreport(json_report):
 
 
 def pytest_sessionfinish(session, exitstatus):
+    if session.config.getoption("--ci"):
+        logger.info("CI flag detected; skipping report upload.")
+        return
+
     provider_name = session.config.getoption("--cloud-provider")
     logger.info(f"Cloud Provider selected for tests: {provider_name}")
     bucket = BucketInterface.get_bucket_class(provider_name)
