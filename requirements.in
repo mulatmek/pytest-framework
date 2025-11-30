@@ -6,3 +6,4 @@ types-requests
 pytest_json_report
 azure-storage-blob
 dotenv
+allure-pytest
