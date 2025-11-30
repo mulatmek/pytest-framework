@@ -4,7 +4,10 @@ import pytest
 from framework.api_handler.api import APIHandler
 from framework.cloud_resources.buckets.buckets import BucketInterface
 from framework.logging.logger import logger
-from framework.reports.reports import generate_allure_reports, upload_allure_report
+from framework.report_manager.reports import (
+    generate_allure_reports,
+    upload_allure_report,
+)
 
 
 def pytest_addoption(parser):
