@@ -10,7 +10,10 @@ from framework.utils.time_utils import time_stamp
 
 
 def generate_allure_reports():
-    logger.info("Generating Allure HTML report...")
+    """
+    generate Allure reports
+    :return:
+    """
     proc = subprocess.run(
         [
             "allure",
@@ -30,6 +33,12 @@ def generate_allure_reports():
 
 
 def upload_allure_report(bucket, provider_name):
+    """
+    upload Allure report to cloud provider
+    :param bucket:
+    :param provider_name:
+    :return:
+    """
     logger.info(f"\nStarting API session for {provider_name}")
     try:
         if RESULTS_DIR.exists() and any(RESULTS_DIR.iterdir()):
