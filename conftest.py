@@ -4,7 +4,7 @@ import pytest
 from framework.api_handler.api import APIHandler
 from framework.cloud_resources.buckets.buckets import BucketInterface
 from framework.logging.logger import logger
-from framework.utils.reports_uploader import upload_reports
+from framework.reports.reports import generate_allure_reports, upload_allure_report
 
 
 def pytest_addoption(parser):
@@ -67,9 +67,19 @@ def pytest_sessionfinish(session, exitstatus):
     logger.info(f"Cloud Provider selected for tests: {provider_name}")
     bucket = BucketInterface.get_bucket_class(provider_name)
 
-    # upload reports
-    logger.info(f"\nStarting report upload session for {provider_name}")
-    upload_reports(bucket, provider_name)
+    logger.info("Generating allure report")
+    report_generated = generate_allure_reports()
+
+    if not report_generated:
+        logger.warning("Allure report generation failed; skipping upload.")
+        return
+
+    if session.config.getoption("--ci"):
+        logger.info("CI flag detected; skipping report upload.")
+        return
+
+    upload_allure_report(bucket, provider_name)
+
     logger.info(f"\nReport upload session closed for {provider_name}")
 
 
