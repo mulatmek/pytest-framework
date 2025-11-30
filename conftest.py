@@ -1,15 +1,10 @@
 # conftest.py
-import datetime
-from pathlib import Path
-
 import pytest
 
 from framework.api_handler.api import APIHandler
 from framework.cloud_resources.buckets.buckets import BucketInterface
-from framework.config import REPORTS_DIR
 from framework.logging.logger import logger
-from framework.reporter.report_generator import CSVReportGenerator
-from framework.utils.time_utils import time_stamp
+from framework.utils.reports_uploader import upload_reports
 
 
 def pytest_addoption(parser):
@@ -60,37 +55,22 @@ def pytest_generate_tests(metafunc):
         metafunc.parametrize("dynamic_url", url_list, scope="session")
 
 
-@pytest.hookimpl(optionalhook=True)
-def pytest_json_modifyreport(json_report):
-    """
-    Hook to access the report data before it is saved to disk.
-    """
-    logger.info("JSON Report generated. Converting to CSV...")
-
-    csv_path = Path(REPORTS_DIR) / "api_test_report.csv"
-
-    generator = CSVReportGenerator(report_data=json_report, output_csv_path=csv_path)
-
-    if generator.generate():
-        logger.info(f"CSV Report successfully created at: {csv_path}")
-    else:
-        logger.error("Failed to create CSV report.")
-
-
 def pytest_sessionfinish(session, exitstatus):
+    """Hook to run after all tests have completed."""
+
     if session.config.getoption("--ci"):
         logger.info("CI flag detected; skipping report upload.")
         return
 
+    # Determine cloud provider and get corresponding bucket class
     provider_name = session.config.getoption("--cloud-provider")
     logger.info(f"Cloud Provider selected for tests: {provider_name}")
     bucket = BucketInterface.get_bucket_class(provider_name)
 
-    report_name = f"test_report_{provider_name}-{time_stamp()}.csv"
-    bucket.upload_file(REPORTS_DIR + "/api_test_report.csv", report_name)
-    logger.info(f"Uploaded report file at: {report_name}")
-
-    logger.info(f"\nAPI session closed for {provider_name}")
+    # upload reports
+    logger.info(f"\nStarting report upload session for {provider_name}")
+    upload_reports(bucket, provider_name)
+    logger.info(f"\nReport upload session closed for {provider_name}")
 
 
 @pytest.fixture(scope="session")

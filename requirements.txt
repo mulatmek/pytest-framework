@@ -4,6 +4,12 @@
 #
 #    pip-compile requirements.in
 #
+allure-pytest==2.15.2
+    # via -r requirements.in
+allure-python-commons==2.15.2
+    # via allure-pytest
+attrs==25.4.0
+    # via allure-python-commons
 azure-core==1.36.0
     # via azure-storage-blob
 azure-storage-blob==12.27.1
@@ -43,7 +49,9 @@ pandas==2.3.3
 platformdirs==4.5.0
     # via virtualenv
 pluggy==1.6.0
-    # via pytest
+    # via
+    #   allure-python-commons
+    #   pytest
 pre-commit==4.4.0
     # via -r requirements.in
 pycparser==2.23
@@ -53,6 +61,7 @@ pygments==2.19.2
 pytest==9.0.1
     # via
     #   -r requirements.in
+    #   allure-pytest
     #   pytest-json-report
     #   pytest-metadata
 pytest-json-report==1.5.0
