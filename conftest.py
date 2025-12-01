@@ -61,11 +61,6 @@ def pytest_generate_tests(metafunc):
 def pytest_sessionfinish(session, exitstatus):
     """Hook to run after all tests have completed."""
 
-    # Determine cloud provider and get corresponding bucket class
-    provider_name = session.config.getoption("--cloud-provider")
-    logger.info(f"Cloud Provider selected for tests: {provider_name}")
-    bucket = BucketInterface.get_bucket_class(provider_name)
-
     logger.info("Generating allure report")
     report_generated = generate_allure_reports()
 
@@ -76,6 +71,11 @@ def pytest_sessionfinish(session, exitstatus):
     if session.config.getoption("--ci"):
         logger.info("CI flag detected; skipping report upload.")
         return
+
+    # Determine cloud provider and get corresponding bucket class
+    provider_name = session.config.getoption("--cloud-provider")
+    logger.info(f"Cloud Provider selected for tests: {provider_name}")
+    bucket = BucketInterface.get_bucket_class(provider_name)
 
     upload_allure_report(bucket, provider_name)
 
