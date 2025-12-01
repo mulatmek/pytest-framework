@@ -61,10 +61,6 @@ def pytest_generate_tests(metafunc):
 def pytest_sessionfinish(session, exitstatus):
     """Hook to run after all tests have completed."""
 
-    if session.config.getoption("--ci"):
-        logger.info("CI flag detected; skipping report upload.")
-        return
-
     # Determine cloud provider and get corresponding bucket class
     provider_name = session.config.getoption("--cloud-provider")
     logger.info(f"Cloud Provider selected for tests: {provider_name}")

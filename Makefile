@@ -45,7 +45,7 @@ clean_env:
 BASE_URL ?= https://www.google.com
 .PHONY: unitest
 unitest:
-	$(PY) -m pytest -sv --json-report  --endpoints=$(BASE_URL) tests/unitest
+	$(PY) -m pytest -sv --alluredir=reports/allure-results  --endpoints=$(BASE_URL) tests/unitest --ci
 	@echo "Unit tests completed."
 
 .PHONY : clean
