@@ -61,15 +61,15 @@ def pytest_generate_tests(metafunc):
 def pytest_sessionfinish(session, exitstatus):
     """Hook to run after all tests have completed."""
 
+    if session.config.getoption("--ci"):
+        logger.info("CI flag detected; skipping report upload.")
+        return
+
     logger.info("Generating allure report")
     report_generated = generate_allure_reports()
 
     if not report_generated:
         logger.warning("Allure report generation failed; skipping upload.")
-        return
-
-    if session.config.getoption("--ci"):
-        logger.info("CI flag detected; skipping report upload.")
         return
 
     # Determine cloud provider and get corresponding bucket class
